@@ -11,7 +11,6 @@ class ImageDrawView extends StatefulWidget {
 class ImageDrawViewState extends State<ImageDrawView> {
   List<Offset?> _points = [];
   Offset _imageOffset = Offset.zero;
-  final Offset _clickedPosition = Offset.zero;
   Offset _initialImageOffset = Offset.zero;
   // [CustomPainter] has its own @canvas to pass our
   // [ui.PictureRecorder] object must be passed to [Canvas]#contructor
@@ -38,7 +37,7 @@ class ImageDrawViewState extends State<ImageDrawView> {
       }),
       onPanUpdate: (details) {
         setState(() {
-          _points = List.from(_points)..add(details.localPosition);
+          _points = List.from(_points)..add(details.localPosition - _imageOffset);
         });
       },
       onPanEnd: (DragEndDetails details) {
