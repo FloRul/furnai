@@ -1,4 +1,5 @@
-﻿import 'package:flutter/material.dart';
+﻿import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 
 class ImageDrawView extends StatefulWidget {
@@ -8,10 +9,14 @@ class ImageDrawView extends StatefulWidget {
   State<ImageDrawView> createState() => ImageDrawViewState();
 }
 
+enum PointerMode { sketch, drag, none }
+
 class ImageDrawViewState extends State<ImageDrawView> {
   List<Offset?> _points = [];
   Offset _imageOffset = Offset.zero;
   Offset _initialImageOffset = Offset.zero;
+  PointerMode _pointerMode = PointerMode.none;
+
   // [CustomPainter] has its own @canvas to pass our
   // [ui.PictureRecorder] object must be passed to [Canvas]#contructor
   // to capture the Image. This way we can pass @recorder to [Canvas]#contructor
@@ -28,27 +33,49 @@ class ImageDrawViewState extends State<ImageDrawView> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTertiaryLongPressMoveUpdate: (details) => setState(() {
-        _imageOffset = _initialImageOffset + details.localOffsetFromOrigin;
-      }),
-      onTertiaryLongPressEnd: (details) => setState(() {
-        _initialImageOffset = _imageOffset;
-      }),
-      onPanUpdate: (details) {
-        setState(() {
-          _points = List.from(_points)..add(details.localPosition - _imageOffset);
-        });
+    return Listener(
+      onPointerDown: (event) {
+        switch (event.buttons) {
+          case kPrimaryButton:
+            setState(() => _pointerMode = PointerMode.sketch);
+          case kTertiaryButton:
+            setState(() => _pointerMode = PointerMode.drag);
+          default:
+            setState(() => _pointerMode = PointerMode.none);
+        }
       },
-      onPanEnd: (DragEndDetails details) {
-        setState(() {
-          _points.add(null);
-        });
+      onPointerMove: (event) {
+        switch (_pointerMode) {
+          case PointerMode.sketch:
+            setState(() => _points = List.from(_points)..add(event.localPosition - _imageOffset));
+          case PointerMode.drag:
+            setState(() => _imageOffset = _initialImageOffset += event.delta);
+          default:
+        }
       },
-      child: CustomPaint(
-        size: Size(widget.image.width.toDouble(), widget.image.height.toDouble()),
-        painter: ImageEditor(image: widget.image, points: _points, offsetFromOrigin: _imageOffset),
-      ),
+      onPointerUp: (event) {
+        switch (_pointerMode) {
+          case PointerMode.sketch:
+            setState(() => _points.add(null));
+          case PointerMode.drag:
+            setState(() => _initialImageOffset = _imageOffset);
+          default:
+        }
+        _pointerMode = PointerMode.none;
+      },
+      child: Builder(builder: (context) {
+        return MouseRegion(
+          cursor: switch (_pointerMode) {
+            PointerMode.sketch => SystemMouseCursors.precise,
+            PointerMode.drag => SystemMouseCursors.move,
+            PointerMode.none => SystemMouseCursors.basic
+          },
+          child: CustomPaint(
+            size: Size(widget.image.width.toDouble(), widget.image.height.toDouble()),
+            painter: ImageEditor(image: widget.image, points: _points, offsetFromOrigin: _imageOffset),
+          ),
+        );
+      }),
     );
   }
 }
