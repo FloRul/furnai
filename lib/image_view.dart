@@ -42,9 +42,9 @@ class _EditImagePageState extends State<EditImagePage> {
       appBar: AppBar(),
       body: isImageLoaded
           ? ImageDrawView(
-              key: imageEditorKey,
-              image: original,
-            )
+            key: imageEditorKey,
+            image: original,
+          )
           : const CircularProgressIndicator(),
       floatingActionButton: FloatingActionButton(
         onPressed: () => saveImage(
