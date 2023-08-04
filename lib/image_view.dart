@@ -14,7 +14,7 @@ class ImageViewPage extends StatefulWidget {
 class _ImageViewPageState extends State<ImageViewPage> {
   late ui.Image original;
   bool isImageLoaded = false;
-  List<Offset?> _points = [];
+
   @override
   void initState() {
     _loadImage();
@@ -35,29 +35,41 @@ class _ImageViewPageState extends State<ImageViewPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: Center(
-        child: isImageLoaded
-            ? LayoutBuilder(builder: (_, constraints) {
-                return GestureDetector(
-                  onPanUpdate: (details) {
-                    setState(() {
-                      RenderBox object = _.findRenderObject() as RenderBox;
-                      Offset locationPoints = object.localToGlobal(details.globalPosition);
-                      _points = List.from(_points)..add(locationPoints);
-                    });
-                  },
-                  onPanEnd: (DragEndDetails details) {
-                    setState(() {
-                      _points.add(null);
-                    });
-                  },
-                  child: CustomPaint(
-                    size: Size(constraints.maxWidth, constraints.maxHeight),
-                    painter: ImageEditor(image: original, points: _points),
-                  ),
-                );
-              })
-            : const CircularProgressIndicator(),
+      body: isImageLoaded
+          ? ImageDrawView(
+              image: original,
+            )
+          : const CircularProgressIndicator(),
+    );
+  }
+}
+
+class ImageDrawView extends StatefulWidget {
+  const ImageDrawView({super.key, required this.image});
+  final ui.Image image;
+  @override
+  State<ImageDrawView> createState() => _ImageDrawViewState();
+}
+
+class _ImageDrawViewState extends State<ImageDrawView> {
+  List<Offset?> _points = [];
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onPanUpdate: (details) {
+        setState(() {
+          _points = List.from(_points)..add(details.localPosition);
+        });
+      },
+      onPanEnd: (DragEndDetails details) {
+        setState(() {
+          _points.add(null);
+        });
+      },
+      child: CustomPaint(
+        size: Size.infinite,
+        painter: ImageEditor(image: widget.image, points: _points),
       ),
     );
   }
@@ -77,8 +89,9 @@ class ImageEditor extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     var paint = Paint()
       ..color = Colors.blue
-      ..strokeCap = StrokeCap.square
-      ..strokeWidth = 5.0;
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 15.0
+      ..blendMode = BlendMode.srcOver;
 
     final outputRect = Rect.fromPoints(ui.Offset.zero, ui.Offset(size.width, size.height));
     final Size imageSize = Size(image.width.toDouble(), image.height.toDouble());
