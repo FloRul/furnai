@@ -72,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onTapUp: (details) => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ImageViewPage(imagePath: _gallery[index]),
+                    builder: (context) => EditImagePage(imagePath: _gallery[index]),
                   ),
                 ),
                 child: Image.file(

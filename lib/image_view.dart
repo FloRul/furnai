@@ -1,19 +1,22 @@
 ﻿import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 
-class ImageViewPage extends StatefulWidget {
-  const ImageViewPage({super.key, required this.imagePath});
+class EditImagePage extends StatefulWidget {
+  const EditImagePage({super.key, required this.imagePath});
   final String imagePath;
 
   @override
-  State<ImageViewPage> createState() => _ImageViewPageState();
+  State<EditImagePage> createState() => _EditImagePageState();
 }
 
-class _ImageViewPageState extends State<ImageViewPage> {
+class _EditImagePageState extends State<EditImagePage> {
   late ui.Image original;
+  late ui.Image edited;
   bool isImageLoaded = false;
+  GlobalKey<ImageDrawViewState> imageEditorKey = GlobalKey();
 
   @override
   void initState() {
@@ -37,10 +40,36 @@ class _ImageViewPageState extends State<ImageViewPage> {
       appBar: AppBar(),
       body: isImageLoaded
           ? ImageDrawView(
+              key: imageEditorKey,
               image: original,
             )
           : const CircularProgressIndicator(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => saveImage(
+          context,
+          (data) => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (BuildContext context) => Scaffold(
+                appBar: AppBar(),
+                body: Image.memory(Uint8List.view(data.buffer)),
+              ),
+            ),
+          ),
+        ),
+        child: const Icon(Icons.save),
+      ),
     );
+  }
+
+  saveImage(BuildContext context, void Function(ByteData data) onSaved) async {
+    ui.Image renderedImage = await imageEditorKey.currentState!.rendered;
+
+    print('image ${renderedImage.toString()}');
+    setState(() {
+      edited = renderedImage;
+    });
+    var pngBytes = await edited.toByteData(format: ui.ImageByteFormat.png);
+    onSaved(pngBytes!);
   }
 }
 
@@ -48,11 +77,25 @@ class ImageDrawView extends StatefulWidget {
   const ImageDrawView({super.key, required this.image});
   final ui.Image image;
   @override
-  State<ImageDrawView> createState() => _ImageDrawViewState();
+  State<ImageDrawView> createState() => ImageDrawViewState();
 }
 
-class _ImageDrawViewState extends State<ImageDrawView> {
+class ImageDrawViewState extends State<ImageDrawView> {
   List<Offset?> _points = [];
+
+  // [CustomPainter] has its own @canvas to pass our
+  // [ui.PictureRecorder] object must be passed to [Canvas]#contructor
+  // to capture the Image. This way we can pass @recorder to [Canvas]#contructor
+  // using @painter[SignaturePainter] we can call [SignaturePainter]#paint
+  // with the our newly created @canvas
+  Future<ui.Image> get rendered {
+    ui.PictureRecorder recorder = ui.PictureRecorder();
+    Canvas canvas = Canvas(recorder);
+    ImageEditor painter = ImageEditor(points: _points, image: widget.image);
+    var size = context.size;
+    painter.paint(canvas, size!);
+    return recorder.endRecording().toImage(size.width.floor(), size.height.floor());
+  }
 
   @override
   Widget build(BuildContext context) {
