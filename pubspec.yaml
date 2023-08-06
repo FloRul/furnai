@@ -33,6 +33,7 @@ dependencies:
   flutter:
     sdk: flutter
   image: ^4.0.17
+  path_provider: ^2.0.15
 
 dev_dependencies:
   flutter_lints: ^2.0.0

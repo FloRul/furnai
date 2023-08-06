@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 
 import 'package:furnai/image_editing.dart';
+import 'package:path_provider/path_provider.dart';
 
 class EditImagePage extends StatefulWidget {
   const EditImagePage({super.key, required this.imagePath});
@@ -15,10 +16,11 @@ class EditImagePage extends StatefulWidget {
 }
 
 class _EditImagePageState extends State<EditImagePage> {
-  late ui.Image original;
-  late ui.Image edited;
-  bool isImageLoaded = false;
+  late ui.Image _original;
+  late ui.Image _edited;
+  bool _isImageLoaded = false;
   GlobalKey<ImageDrawViewState> imageEditorKey = GlobalKey();
+  PointerMode _pointerMode = PointerMode.none;
 
   @override
   void initState() {
@@ -31,8 +33,8 @@ class _EditImagePageState extends State<EditImagePage> {
       await File(widget.imagePath).readAsBytes(),
     );
     setState(() {
-      isImageLoaded = true;
-      original = image;
+      _isImageLoaded = true;
+      _original = image;
     });
   }
 
@@ -40,12 +42,38 @@ class _EditImagePageState extends State<EditImagePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: isImageLoaded
-          ? ImageDrawView(
-            key: imageEditorKey,
-            image: original,
-          )
-          : const CircularProgressIndicator(),
+      body: _isImageLoaded
+          ? Stack(
+              children: [
+                ImageDrawView(
+                  key: imageEditorKey,
+                  image: _original,
+                ),
+                Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: FloatingActionButton(
+                        onPressed: () => setState(() {
+                          _pointerMode = PointerMode.sketch;
+                        }),
+                        child: const Icon(Icons.draw),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: FloatingActionButton(
+                        onPressed: () => setState(() {
+                          _pointerMode = PointerMode.drag;
+                        }),
+                        child: const Icon(Icons.back_hand),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            )
+          : const Center(child: CircularProgressIndicator()),
       floatingActionButton: FloatingActionButton(
         onPressed: () => saveImage(
           context,
@@ -53,7 +81,7 @@ class _EditImagePageState extends State<EditImagePage> {
             MaterialPageRoute(
               builder: (BuildContext context) => Scaffold(
                 appBar: AppBar(),
-                body: Image.memory(Uint8List.view(data.buffer)),
+                body: Center(child: Image.memory(Uint8List.view(data.buffer))),
               ),
             ),
           ),
@@ -63,12 +91,18 @@ class _EditImagePageState extends State<EditImagePage> {
     );
   }
 
-  saveImage(BuildContext context, void Function(ByteData data) onSaved) async {
+// TODO refactor to remove context coupling
+  Future<void> saveImage(BuildContext context, void Function(ByteData data) onSaved) async {
     ui.Image renderedImage = await imageEditorKey.currentState!.rendered;
     setState(() {
-      edited = renderedImage;
+      _edited = renderedImage;
     });
-    var pngBytes = await edited.toByteData(format: ui.ImageByteFormat.png);
-    onSaved(pngBytes!);
+    var pngBytes = await _edited.toByteData(format: ui.ImageByteFormat.png);
+    final buffer = pngBytes!.buffer;
+    var dir = await getApplicationDocumentsDirectory();
+    var path = '${dir.path}\\generated\\IMG01.png';
+    print(path);
+    File(path).writeAsBytes(buffer.asUint8List(pngBytes.offsetInBytes, pngBytes.lengthInBytes));
+    onSaved(pngBytes);
   }
 }
