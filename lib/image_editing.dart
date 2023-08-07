@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 
+import 'package:furnai/image_mask_generator.dart';
+
 class ImageDrawView extends StatefulWidget {
   const ImageDrawView({super.key, required this.image});
   final ui.Image image;
@@ -22,13 +24,28 @@ class ImageDrawViewState extends State<ImageDrawView> {
   // to capture the Image. This way we can pass @recorder to [Canvas]#contructor
   // using @painter[SignaturePainter] we can call [SignaturePainter]#paint
   // with the our newly created @canvas
-  Future<ui.Image> get rendered {
-    ui.PictureRecorder recorder = ui.PictureRecorder();
-    Canvas canvas = Canvas(recorder);
+  Future<(ui.Image, ui.Image)> get rendered async {
+    var size = Size(widget.image.width.toDouble(), widget.image.height.toDouble());
+
+    var originalRecorder = ui.PictureRecorder();
+    var maskRecorder = ui.PictureRecorder();
+
+    var originalCanvas = Canvas(originalRecorder);
+    var maskCanvas = Canvas(maskRecorder);
+
     ImageEditor painter = ImageEditor(points: _points, image: widget.image, offsetFromOrigin: _imageOffset);
-    var size = context.size;
-    painter.paint(canvas, size!);
-    return recorder.endRecording().toImage(widget.image.width.floor(), widget.image.height.floor());
+    ImageMaskGenerator maskPainter = ImageMaskGenerator(
+      imageSize: size,
+      points: _points,
+    );
+
+    painter.paint(originalCanvas, size);
+    maskPainter.paint(maskCanvas, size);
+
+    var original = originalRecorder.endRecording().toImage(size.width.floor(), size.height.floor());
+    var mask = maskRecorder.endRecording().toImage(size.width.floor(), size.height.floor());
+    var awaited = await Future.wait([original, mask]);
+    return (awaited.first, awaited[1]);
   }
 
   @override

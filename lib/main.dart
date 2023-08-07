@@ -84,6 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'save',
         onPressed: () async {
           FilePickerResult? result = await FilePicker.platform.pickFiles(
             type: FileType.custom,
@@ -99,22 +100,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 ifAbsent: () => false,
               );
             });
-            // final cmd = img.Command()
-            //   // Decode the image file at the given path
-            //   ..decodeImageFile(path)
-            //   // Resize the image to a width of 64 pixels and a height that maintains the aspect ratio of the original.
-            //   ..copyResize(width: 64)
-            //   // Write the image to a PNG file (determined by the suffix of the file path).
-            //   ..writeToFile('thumbnail.png');
-            // // On platforms that support Isolates, execute the image commands asynchronously on an isolate thread.
-            // // Otherwise, the commands will be executed synchronously.
-            // await cmd.executeThread();
-
-            // if (cmd.outputImage != null) {
-            //   setState(() {
-            //     gallery.add(cmd.outputImage!);
-            //   });
-            // }
           } else {
             // ignore: use_build_context_synchronously
             ScaffoldMessenger.maybeOf(context)?.showSnackBar(

@@ -6,6 +6,7 @@ import 'dart:ui' as ui;
 
 import 'package:furnai/image_editing.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:uuid/uuid.dart';
 
 class EditImagePage extends StatefulWidget {
   const EditImagePage({super.key, required this.imagePath});
@@ -54,6 +55,7 @@ class _EditImagePageState extends State<EditImagePage> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: FloatingActionButton(
+                        heroTag: 'sketch',
                         onPressed: () => setState(() {
                           _pointerMode = PointerMode.sketch;
                         }),
@@ -63,6 +65,7 @@ class _EditImagePageState extends State<EditImagePage> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: FloatingActionButton(
+                        heroTag: 'drag',
                         onPressed: () => setState(() {
                           _pointerMode = PointerMode.drag;
                         }),
@@ -81,7 +84,12 @@ class _EditImagePageState extends State<EditImagePage> {
             MaterialPageRoute(
               builder: (BuildContext context) => Scaffold(
                 appBar: AppBar(),
-                body: Center(child: Image.memory(Uint8List.view(data.buffer))),
+                body: Row(
+                  children: [
+                    Image.memory(Uint8List.view(data.$1.buffer)),
+                    Image.memory(Uint8List.view(data.$2.buffer))
+                  ],
+                ),
               ),
             ),
           ),
@@ -92,17 +100,27 @@ class _EditImagePageState extends State<EditImagePage> {
   }
 
 // TODO refactor to remove context coupling
-  Future<void> saveImage(BuildContext context, void Function(ByteData data) onSaved) async {
-    ui.Image renderedImage = await imageEditorKey.currentState!.rendered;
-    setState(() {
-      _edited = renderedImage;
-    });
-    var pngBytes = await _edited.toByteData(format: ui.ImageByteFormat.png);
-    final buffer = pngBytes!.buffer;
+  Future<void> saveImage(BuildContext context, void Function((ByteData, ByteData) data) onSaved) async {
+    var renderedImages = await imageEditorKey.currentState!.rendered;
+
+    var originalPngBytes = await renderedImages.$1.toByteData(format: ui.ImageByteFormat.png);
+    var maskPngBytes = await renderedImages.$2.toByteData(format: ui.ImageByteFormat.png);
+
+    final buffer = originalPngBytes!.buffer;
+    final maskBuffer = maskPngBytes!.buffer;
+
+    const uuid = Uuid();
+
     var dir = await getApplicationDocumentsDirectory();
-    var path = '${dir.path}\\generated\\IMG01.png';
-    print(path);
-    File(path).writeAsBytes(buffer.asUint8List(pngBytes.offsetInBytes, pngBytes.lengthInBytes));
-    onSaved(pngBytes);
+    var originalPath = '${dir.path}\\generated\\${uuid.v1()}.png';
+    var maskPath = '${dir.path}\\generated\\${uuid.v1()}_mask.png';
+
+    File(originalPath)
+        .create(recursive: true)
+        .then((value) => buffer.asUint8List(originalPngBytes.offsetInBytes, originalPngBytes.lengthInBytes));
+    File(maskPath)
+        .create(recursive: true)
+        .then((value) => maskBuffer.asUint8List(maskPngBytes.offsetInBytes, maskPngBytes.lengthInBytes));
+    onSaved((originalPngBytes, maskPngBytes));
   }
 }
