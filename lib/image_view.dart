@@ -86,8 +86,18 @@ class _EditImagePageState extends State<EditImagePage> {
                 appBar: AppBar(),
                 body: Row(
                   children: [
-                    Image.memory(Uint8List.view(data.$1.buffer)),
-                    Image.memory(Uint8List.view(data.$2.buffer))
+                    Expanded(
+                      child: Image.memory(
+                        Uint8List.view(data.$1.buffer),
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                    Expanded(
+                      child: Image.memory(
+                        Uint8List.view(data.$2.buffer),
+                        fit: BoxFit.contain,
+                      ),
+                    )
                   ],
                 ),
               ),
@@ -100,11 +110,11 @@ class _EditImagePageState extends State<EditImagePage> {
   }
 
 // TODO refactor to remove context coupling
-  Future<void> saveImage(BuildContext context, void Function((ByteData, ByteData) data) onSaved) async {
-    var renderedImages = await imageEditorKey.currentState!.rendered;
+  Future<void> saveImage(BuildContext context, void Function((ByteData, ByteData) saved) onSaved) async {
+    var mask = await imageEditorKey.currentState!.mask;
 
-    var originalPngBytes = await renderedImages.$1.toByteData(format: ui.ImageByteFormat.png);
-    var maskPngBytes = await renderedImages.$2.toByteData(format: ui.ImageByteFormat.png);
+    var originalPngBytes = await _original.toByteData(format: ui.ImageByteFormat.png);
+    var maskPngBytes = await mask.toByteData(format: ui.ImageByteFormat.png);
 
     final buffer = originalPngBytes!.buffer;
     final maskBuffer = maskPngBytes!.buffer;
@@ -115,12 +125,10 @@ class _EditImagePageState extends State<EditImagePage> {
     var originalPath = '${dir.path}\\generated\\${uuid.v1()}.png';
     var maskPath = '${dir.path}\\generated\\${uuid.v1()}_mask.png';
 
-    File(originalPath)
-        .create(recursive: true)
-        .then((value) => buffer.asUint8List(originalPngBytes.offsetInBytes, originalPngBytes.lengthInBytes));
-    File(maskPath)
-        .create(recursive: true)
-        .then((value) => maskBuffer.asUint8List(maskPngBytes.offsetInBytes, maskPngBytes.lengthInBytes));
+    File(originalPath).create(recursive: true).then((file) =>
+        file.writeAsBytes(buffer.asUint8List(originalPngBytes.offsetInBytes, originalPngBytes.lengthInBytes)));
+    File(maskPath).create(recursive: true).then(
+        (file) => file.writeAsBytes(maskBuffer.asUint8List(maskPngBytes.offsetInBytes, maskPngBytes.lengthInBytes)));
     onSaved((originalPngBytes, maskPngBytes));
   }
 }

@@ -1,6 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 
-class ImageMaskGenerator extends CustomPainter {
+class ImageMaskPainter extends CustomPainter {
   // [ImageEditor] receives points through constructor
   // @points holds the drawn path in the form (x,y) offset;
   // This class responsible for drawing only
@@ -8,7 +8,7 @@ class ImageMaskGenerator extends CustomPainter {
   final List<Offset?> points;
   final Size imageSize;
 
-  ImageMaskGenerator({
+  ImageMaskPainter({
     required this.points,
     required this.imageSize,
   });
@@ -34,5 +34,5 @@ class ImageMaskGenerator extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(ImageMaskGenerator oldDelegate) => false;
+  bool shouldRepaint(ImageMaskPainter oldDelegate) => false;
 }
