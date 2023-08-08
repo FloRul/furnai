@@ -1,7 +1,12 @@
-﻿import 'package:file_picker/file_picker.dart';
+﻿import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:furnai/presentation/image_view.dart';
 import 'package:furnai/presentation/widgets/hoverable_thumbnail.dart';
+import 'dart:ui' as ui;
+
+import 'package:furnai/presentation/widgets/loading_overlay.dart';
 
 class ImageGallery extends StatefulWidget {
   const ImageGallery({super.key, required this.title});
@@ -47,12 +52,26 @@ class _ImageGalleryState extends State<ImageGallery> {
             child: HoverableThumbnail(
               hovered: _hovered[_gallery[index]]!,
               path: _gallery[index],
-              onTapUp: (path) => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ImageEditorWrapper(imagePath: path),
-                ),
-              ),
+              onTapUp: (path) async {
+                var overlayEntry = OverlayEntry(builder: (context) => const LoadingOverlay());
+                Overlay.of(context).insert(
+                  overlayEntry,
+                );
+
+                final ui.Image image = await decodeImageFromList(
+                  await File(path).readAsBytes(),
+                );
+
+                await Future.delayed(const Duration(seconds: 1));
+                overlayEntry.remove();
+
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ImageEditorWrapper(image: image),
+                  ),
+                );
+              },
             ),
           ),
         ),

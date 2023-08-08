@@ -11,73 +11,53 @@ import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
 class ImageEditorWrapper extends StatefulWidget {
-  const ImageEditorWrapper({super.key, required this.imagePath});
-  final String imagePath;
+  const ImageEditorWrapper({super.key, required this.image});
+  final ui.Image image;
 
   @override
   State<ImageEditorWrapper> createState() => _ImageEditorWrapperState();
 }
 
 class _ImageEditorWrapperState extends State<ImageEditorWrapper> {
-  late ui.Image _original;
-  bool _isImageLoaded = false;
   GlobalKey<ImageEditorViewState> imageEditorKey = GlobalKey();
   PointerMode _pointerMode = PointerMode.none;
-
-  @override
-  void initState() {
-    _loadImage();
-    super.initState();
-  }
-
-  _loadImage() async {
-    final ui.Image image = await decodeImageFromList(
-      await File(widget.imagePath).readAsBytes(),
-    );
-    setState(() {
-      _isImageLoaded = true;
-      _original = image;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: _isImageLoaded
-          ? Stack(
-              children: [
-                ImageEditorView(
-                  key: imageEditorKey,
-                  image: _original,
+      body: Stack(
+        children: [
+          ImageEditorView(
+            key: imageEditorKey,
+            image: widget.image,
+          ),
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: FloatingActionButton(
+                  heroTag: 'sketch',
+                  onPressed: () => setState(() {
+                    _pointerMode = PointerMode.sketch;
+                  }),
+                  child: const Icon(Icons.draw),
                 ),
-                Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: FloatingActionButton(
-                        heroTag: 'sketch',
-                        onPressed: () => setState(() {
-                          _pointerMode = PointerMode.sketch;
-                        }),
-                        child: const Icon(Icons.draw),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: FloatingActionButton(
-                        heroTag: 'drag',
-                        onPressed: () => setState(() {
-                          _pointerMode = PointerMode.drag;
-                        }),
-                        child: const Icon(Icons.back_hand),
-                      ),
-                    ),
-                  ],
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: FloatingActionButton(
+                  heroTag: 'drag',
+                  onPressed: () => setState(() {
+                    _pointerMode = PointerMode.drag;
+                  }),
+                  child: const Icon(Icons.back_hand),
                 ),
-              ],
-            )
-          : const Center(child: CircularProgressIndicator()),
+              ),
+            ],
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => saveImage(
           (data) => Navigator.of(context).push(
@@ -94,7 +74,7 @@ class _ImageEditorWrapperState extends State<ImageEditorWrapper> {
   Future<void> saveImage(void Function((ByteData, ByteData) saved) onSaved) async {
     var mask = await imageEditorKey.currentState!.mask;
 
-    var originalPngBytes = await _original.toByteData(format: ui.ImageByteFormat.png);
+    var originalPngBytes = await widget.image.toByteData(format: ui.ImageByteFormat.png);
     var maskPngBytes = await mask.toByteData(format: ui.ImageByteFormat.png);
 
     final buffer = originalPngBytes!.buffer;
