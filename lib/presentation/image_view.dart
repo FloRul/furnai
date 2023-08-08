@@ -19,8 +19,23 @@ class ImageEditorWrapper extends StatefulWidget {
 }
 
 class _ImageEditorWrapperState extends State<ImageEditorWrapper> {
-  GlobalKey<ImageEditorViewState> imageEditorKey = GlobalKey();
-  PointerMode _pointerMode = PointerMode.none;
+  GlobalKey<ImageEditorViewState> imageEditorKey = GlobalKey<ImageEditorViewState>();
+  PointerMode _pointerMode = PointerMode.drag;
+  final List<Widget> _pointerModeToggles = [
+    const Icon(Icons.back_hand),
+    const Icon(Icons.draw),
+  ];
+  late List<bool> _pointerModeSelection;
+
+  @override
+  void initState() {
+    _pointerModeSelection = List.generate(
+      _pointerModeToggles.length,
+      (index) => index == 0,
+    );
+    _pointerMode = PointerMode.drag;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,45 +43,53 @@ class _ImageEditorWrapperState extends State<ImageEditorWrapper> {
       appBar: AppBar(),
       body: Stack(
         children: [
-          ImageEditorView(
-            key: imageEditorKey,
-            image: widget.image,
-          ),
-          Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: FloatingActionButton(
-                  heroTag: 'sketch',
-                  onPressed: () => setState(() {
-                    _pointerMode = PointerMode.sketch;
-                  }),
-                  child: const Icon(Icons.draw),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: FloatingActionButton(
-                  heroTag: 'drag',
-                  onPressed: () => setState(() {
-                    _pointerMode = PointerMode.drag;
-                  }),
-                  child: const Icon(Icons.back_hand),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => saveImage(
-          (data) => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => MaskResultPreview(result: data),
+          InteractiveViewer(
+            constrained: false,
+            panEnabled: _pointerMode == PointerMode.drag,
+            child: ImageEditorView(
+              key: imageEditorKey,
+              image: widget.image,
+              pointerMode: _pointerMode,
             ),
           ),
-        ),
-        child: const Icon(Icons.save),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                IconButton.filledTonal(
+                  onPressed: () => saveImage(
+                    (data) => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => MaskResultPreview(result: data),
+                      ),
+                    ),
+                  ),
+                  icon: const Icon(Icons.save),
+                ),
+                const SizedBox(
+                  height: 8,
+                ),
+                ToggleButtons(
+                  direction: Axis.vertical,
+                  isSelected: _pointerModeSelection,
+                  children: _pointerModeToggles,
+                  onPressed: (index) {
+                    setState(() {
+                      _pointerMode = switch (index) {
+                        0 => PointerMode.sketch,
+                        1 => PointerMode.drag,
+                        _ => PointerMode.none,
+                      };
+                      for (int i = 0; i < _pointerModeSelection.length; i++) {
+                        _pointerModeSelection[i] = i == index;
+                      }
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
