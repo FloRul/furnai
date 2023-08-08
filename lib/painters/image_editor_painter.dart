@@ -79,7 +79,7 @@ class ImageDrawViewState extends State<ImageDrawView> {
           },
           child: CustomPaint(
             size: Size(widget.image.width.toDouble(), widget.image.height.toDouble()),
-            painter: ImageEditor(image: widget.image, points: _points, offsetFromOrigin: _imageOffset),
+            painter: ImageEditorPainter(image: widget.image, points: _points, offsetFromOrigin: _imageOffset),
           ),
         ),
       ),
@@ -87,7 +87,7 @@ class ImageDrawViewState extends State<ImageDrawView> {
   }
 }
 
-class ImageEditor extends CustomPainter {
+class ImageEditorPainter extends CustomPainter {
   // [ImageEditor] receives points through constructor
   // @points holds the drawn path in the form (x,y) offset;
   // This class responsible for drawing only
@@ -96,7 +96,7 @@ class ImageEditor extends CustomPainter {
   final ui.Image image;
   final Offset offsetFromOrigin;
 
-  ImageEditor({required this.points, required this.image, required this.offsetFromOrigin});
+  ImageEditorPainter({required this.points, required this.image, required this.offsetFromOrigin});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -116,7 +116,7 @@ class ImageEditor extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(ImageEditor oldDelegate) {
+  bool shouldRepaint(ImageEditorPainter oldDelegate) {
     return oldDelegate.points != points || offsetFromOrigin != oldDelegate.offsetFromOrigin;
   }
 }

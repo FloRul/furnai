@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 
-import 'package:furnai/image_editing.dart';
+import 'package:furnai/painters/image_editor_painter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
