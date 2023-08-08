@@ -1,10 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 
 class ImageMaskPainter extends CustomPainter {
-  // [ImageEditor] receives points through constructor
-  // @points holds the drawn path in the form (x,y) offset;
-  // This class responsible for drawing only
-  // It won't receive any drag/touch events by draw/user.
   final List<Offset?> points;
   final Size imageSize;
 

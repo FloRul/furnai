@@ -1,6 +1,7 @@
 ﻿import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:furnai/presentation/hoverable_thumbnail.dart';
+import 'package:furnai/presentation/image_view.dart';
+import 'package:furnai/presentation/widgets/hoverable_thumbnail.dart';
 
 class ImageGallery extends StatefulWidget {
   const ImageGallery({super.key, required this.title});
@@ -43,12 +44,21 @@ class _ImageGalleryState extends State<ImageGallery> {
             onExit: (event) => setState(() {
               _hovered[_gallery[index]] = false;
             }),
-            child: HoverableThumbnail(hovered: _hovered[_gallery[index]]!, path: _gallery[index]),
+            child: HoverableThumbnail(
+              hovered: _hovered[_gallery[index]]!,
+              path: _gallery[index],
+              onTapUp: (path) => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ImageEditorWrapper(imagePath: path),
+                ),
+              ),
+            ),
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        heroTag: 'save',
+        heroTag: 'pickFile',
         onPressed: () async {
           FilePickerResult? result = await FilePicker.platform.pickFiles(
             type: FileType.custom,

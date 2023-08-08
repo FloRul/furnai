@@ -2,25 +2,26 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:furnai/misc/enums.dart';
 import 'dart:ui' as ui;
 
-import 'package:furnai/painters/image_editor_painter.dart';
+import 'package:furnai/presentation/image_editor.dart';
+import 'package:furnai/presentation/mask_result_preview.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
-class EditImagePage extends StatefulWidget {
-  const EditImagePage({super.key, required this.imagePath});
+class ImageEditorWrapper extends StatefulWidget {
+  const ImageEditorWrapper({super.key, required this.imagePath});
   final String imagePath;
 
   @override
-  State<EditImagePage> createState() => _EditImagePageState();
+  State<ImageEditorWrapper> createState() => _ImageEditorWrapperState();
 }
 
-class _EditImagePageState extends State<EditImagePage> {
+class _ImageEditorWrapperState extends State<ImageEditorWrapper> {
   late ui.Image _original;
-  late ui.Image _edited;
   bool _isImageLoaded = false;
-  GlobalKey<ImageDrawViewState> imageEditorKey = GlobalKey();
+  GlobalKey<ImageEditorViewState> imageEditorKey = GlobalKey();
   PointerMode _pointerMode = PointerMode.none;
 
   @override
@@ -46,7 +47,7 @@ class _EditImagePageState extends State<EditImagePage> {
       body: _isImageLoaded
           ? Stack(
               children: [
-                ImageDrawView(
+                ImageEditorView(
                   key: imageEditorKey,
                   image: _original,
                 ),
@@ -79,28 +80,9 @@ class _EditImagePageState extends State<EditImagePage> {
           : const Center(child: CircularProgressIndicator()),
       floatingActionButton: FloatingActionButton(
         onPressed: () => saveImage(
-          context,
           (data) => Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (BuildContext context) => Scaffold(
-                appBar: AppBar(),
-                body: Row(
-                  children: [
-                    Expanded(
-                      child: Image.memory(
-                        Uint8List.view(data.$1.buffer),
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                    Expanded(
-                      child: Image.memory(
-                        Uint8List.view(data.$2.buffer),
-                        fit: BoxFit.contain,
-                      ),
-                    )
-                  ],
-                ),
-              ),
+              builder: (_) => MaskResultPreview(result: data),
             ),
           ),
         ),
@@ -109,8 +91,7 @@ class _EditImagePageState extends State<EditImagePage> {
     );
   }
 
-// TODO refactor to remove context coupling
-  Future<void> saveImage(BuildContext context, void Function((ByteData, ByteData) saved) onSaved) async {
+  Future<void> saveImage(void Function((ByteData, ByteData) saved) onSaved) async {
     var mask = await imageEditorKey.currentState!.mask;
 
     var originalPngBytes = await _original.toByteData(format: ui.ImageByteFormat.png);
