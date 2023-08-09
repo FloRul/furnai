@@ -72,9 +72,12 @@ class _ImageEditorWrapperState extends State<ImageEditorWrapper> {
                 IconButton.filledTonal(
                   iconSize: 30,
                   onPressed: () => saveImage(
-                    (data) => Navigator.of(context).push(
+                    (data, path) => Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (_) => MaskResultPreview(result: data),
+                        builder: (_) => MaskResultPreview(
+                          result: data,
+                          path: path,
+                        ),
                       ),
                     ),
                   ),
@@ -108,7 +111,7 @@ class _ImageEditorWrapperState extends State<ImageEditorWrapper> {
     );
   }
 
-  Future<void> saveImage(void Function((ByteData, ByteData) saved) onSaved) async {
+  Future<void> saveImage(void Function((ByteData, ByteData) saved, String path) onSaved) async {
     var mask = await imageEditorKey.currentState!.mask;
 
     var originalPngBytes = await widget.image.toByteData(format: ui.ImageByteFormat.png);
@@ -120,13 +123,14 @@ class _ImageEditorWrapperState extends State<ImageEditorWrapper> {
     const uuid = Uuid();
 
     var dir = await getApplicationDocumentsDirectory();
-    var originalPath = '${dir.path}\\generated\\${uuid.v1()}.png';
-    var maskPath = '${dir.path}\\generated\\${uuid.v1()}_mask.png';
+    var folderPath = '${dir.path}\\generated';
+    var originalPath = '$folderPath\\${uuid.v1()}.png';
+    var maskPath = '$folderPath\\${uuid.v1()}_mask.png';
 
     File(originalPath).create(recursive: true).then((file) =>
         file.writeAsBytes(buffer.asUint8List(originalPngBytes.offsetInBytes, originalPngBytes.lengthInBytes)));
     File(maskPath).create(recursive: true).then(
         (file) => file.writeAsBytes(maskBuffer.asUint8List(maskPngBytes.offsetInBytes, maskPngBytes.lengthInBytes)));
-    onSaved((originalPngBytes, maskPngBytes));
+    onSaved((originalPngBytes, maskPngBytes), folderPath);
   }
 }

@@ -65,6 +65,7 @@ class _ImageGalleryState extends State<ImageGallery> {
                 await Future.delayed(const Duration(seconds: 1));
                 overlayEntry.remove();
 
+                // ignore: use_build_context_synchronously
                 await Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -99,7 +100,6 @@ class _ImageGalleryState extends State<ImageGallery> {
               const SnackBar(
                 content: Text(
                   'File picking canceled',
-                  style: TextStyle(color: Colors.amber),
                 ),
               ),
             );
