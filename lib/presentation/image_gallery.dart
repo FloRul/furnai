@@ -1,17 +1,16 @@
 ﻿import 'dart:io';
 
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:furnai/presentation/image_view.dart';
-import 'package:furnai/presentation/widgets/hoverable_thumbnail.dart';
+import 'package:furnai/presentation/widgets/image_thumbnail.dart';
 import 'dart:ui' as ui;
 
 import 'package:furnai/presentation/widgets/loading_overlay.dart';
 
 class ImageGallery extends StatefulWidget {
-  const ImageGallery({super.key, required this.title});
-
-  final String title;
+  const ImageGallery({super.key});
 
   @override
   State<ImageGallery> createState() => _ImageGalleryState();
@@ -20,9 +19,11 @@ class ImageGallery extends StatefulWidget {
 class _ImageGalleryState extends State<ImageGallery> {
   final List<String> _gallery = [];
   late Map<String, bool> _hovered;
+  late bool _isDeleting;
 
   @override
   void initState() {
+    _isDeleting = false;
     _hovered = Map.fromEntries(
       _gallery.map(
         (e) => MapEntry(e, false),
@@ -36,7 +37,21 @@ class _ImageGalleryState extends State<ImageGallery> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: const Text('FurnAI'),
+        actions: [
+          IconButton(
+            isSelected: _isDeleting,
+            icon: const Icon(Icons.delete_outline),
+            selectedIcon: const Icon(Icons.delete),
+            onPressed: () => setState(() {
+              _isDeleting = !_isDeleting;
+            }),
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () => Amplify.Auth.signOut(),
+          ),
+        ],
       ),
       body: Center(
         child: GridView.builder(
@@ -49,7 +64,8 @@ class _ImageGalleryState extends State<ImageGallery> {
             onExit: (event) => setState(() {
               _hovered[_gallery[index]] = false;
             }),
-            child: HoverableThumbnail(
+            child: ImageThumbnail(
+              isChecked: _isDeleting ? false : null,
               hovered: _hovered[_gallery[index]]!,
               path: _gallery[index],
               onTapUp: (path) async {
