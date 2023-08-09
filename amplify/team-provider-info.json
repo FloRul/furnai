@@ -1,0 +1,23 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-furnai-dev-215019-authRole",
+      "UnauthRoleArn": "arn:aws:iam::668618083225:role/amplify-furnai-dev-215019-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::668618083225:role/amplify-furnai-dev-215019-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-furnai-dev-215019-deployment",
+      "UnauthRoleName": "amplify-furnai-dev-215019-unauthRole",
+      "StackName": "amplify-furnai-dev-215019",
+      "StackId": "arn:aws:cloudformation:us-east-1:668618083225:stack/amplify-furnai-dev-215019/18d3c350-3657-11ee-be51-0eda8fea9503",
+      "AmplifyAppId": "d20a62988crvri"
+    },
+    "categories": {
+      "auth": {
+        "furnai31095bad": {}
+      },
+      "api": {
+        "furnai": {}
+      }
+    }
+  }
+}

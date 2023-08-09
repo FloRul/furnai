@@ -1,0 +1,11 @@
+{
+  "AppSyncApiName": "furnai",
+  "DynamoDBBillingMode": "PAY_PER_REQUEST",
+  "DynamoDBEnableServerSideEncryption": false,
+  "AuthCognitoUserPoolId": {
+    "Fn::GetAtt": [
+      "authfurnai31095bad",
+      "Outputs.UserPoolId"
+    ]
+  }
+}
