@@ -44,6 +44,7 @@ class _ImageEditorWrapperState extends State<ImageEditorWrapper> {
       body: Stack(
         children: [
           InteractiveViewer(
+            boundaryMargin: const EdgeInsets.all(100),
             constrained: false,
             panEnabled: _pointerMode == PointerMode.drag,
             child: ImageEditorView(
@@ -76,8 +77,8 @@ class _ImageEditorWrapperState extends State<ImageEditorWrapper> {
                   onPressed: (index) {
                     setState(() {
                       _pointerMode = switch (index) {
-                        0 => PointerMode.sketch,
-                        1 => PointerMode.drag,
+                        0 => PointerMode.drag,
+                        1 => PointerMode.sketch,
                         _ => PointerMode.none,
                       };
                       for (int i = 0; i < _pointerModeSelection.length; i++) {
