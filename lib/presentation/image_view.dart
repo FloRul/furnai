@@ -22,8 +22,20 @@ class _ImageEditorWrapperState extends State<ImageEditorWrapper> {
   GlobalKey<ImageEditorViewState> imageEditorKey = GlobalKey<ImageEditorViewState>();
   PointerMode _pointerMode = PointerMode.drag;
   final List<Widget> _pointerModeToggles = [
-    const Icon(Icons.back_hand),
-    const Icon(Icons.draw),
+    const Padding(
+      padding: EdgeInsets.all(8.0),
+      child: Icon(
+        Icons.back_hand,
+        size: 30,
+      ),
+    ),
+    const Padding(
+      padding: EdgeInsets.all(8.0),
+      child: Icon(
+        Icons.draw,
+        size: 30,
+      ),
+    ),
   ];
   late List<bool> _pointerModeSelection;
 
@@ -58,6 +70,7 @@ class _ImageEditorWrapperState extends State<ImageEditorWrapper> {
             child: Column(
               children: [
                 IconButton.filledTonal(
+                  iconSize: 30,
                   onPressed: () => saveImage(
                     (data) => Navigator.of(context).push(
                       MaterialPageRoute(
