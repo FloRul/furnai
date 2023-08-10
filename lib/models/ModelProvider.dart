@@ -21,18 +21,14 @@
 
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
 import 'ImageEntry.dart';
-import 'Picture.dart';
-import 'S3Object.dart';
 
 export 'ImageEntry.dart';
-export 'Picture.dart';
-export 'S3Object.dart';
 
 class ModelProvider implements amplify_core.ModelProviderInterface {
   @override
-  String version = "1c944a43eb1010477a9974c648bc45f0";
+  String version = "a5223e549d9f418d06cadf88128f0477";
   @override
-  List<amplify_core.ModelSchema> modelSchemas = [ImageEntry.schema, Picture.schema, S3Object.schema];
+  List<amplify_core.ModelSchema> modelSchemas = [ImageEntry.schema];
   @override
   List<amplify_core.ModelSchema> customTypeSchemas = [];
   static final ModelProvider _instance = ModelProvider();
@@ -43,10 +39,6 @@ class ModelProvider implements amplify_core.ModelProviderInterface {
     switch(modelName) {
       case "ImageEntry":
         return ImageEntry.classType;
-      case "Picture":
-        return Picture.classType;
-      case "S3Object":
-        return S3Object.classType;
       default:
         throw Exception("Failed to find model in model provider for model name: " + modelName);
     }

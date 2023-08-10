@@ -27,13 +27,11 @@ import 'package:amplify_core/amplify_core.dart' as amplify_core;
 class ImageEntry extends amplify_core.Model {
   static const classType = const _ImageEntryModelType();
   final String id;
-  final Picture? _originalImage;
-  final Picture? _maskImage;
+  final String? _originalImage;
+  final String? _maskImage;
   final String? _owner;
-  final amplify_core.TemporalDateTime? _createdAt;
-  final amplify_core.TemporalDateTime? _updatedAt;
-  final String? _imageEntryOriginalImageId;
-  final String? _imageEntryMaskImageId;
+  final amplify_core.TemporalDateTime? _createdOn;
+  final amplify_core.TemporalDateTime? _updatedOn;
 
   @override
   getInstanceType() => classType;
@@ -48,7 +46,7 @@ class ImageEntry extends amplify_core.Model {
       );
   }
   
-  Picture get originalImage {
+  String get originalImage {
     try {
       return _originalImage!;
     } catch(e) {
@@ -61,7 +59,7 @@ class ImageEntry extends amplify_core.Model {
     }
   }
   
-  Picture get maskImage {
+  String get maskImage {
     try {
       return _maskImage!;
     } catch(e) {
@@ -78,50 +76,22 @@ class ImageEntry extends amplify_core.Model {
     return _owner;
   }
   
-  amplify_core.TemporalDateTime? get createdAt {
-    return _createdAt;
+  amplify_core.TemporalDateTime? get createdOn {
+    return _createdOn;
   }
   
-  amplify_core.TemporalDateTime? get updatedAt {
-    return _updatedAt;
+  amplify_core.TemporalDateTime? get updatedOn {
+    return _updatedOn;
   }
   
-  String get imageEntryOriginalImageId {
-    try {
-      return _imageEntryOriginalImageId!;
-    } catch(e) {
-      throw amplify_core.AmplifyCodeGenModelException(
-          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion:
-            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString()
-          );
-    }
-  }
+  const ImageEntry._internal({required this.id, required originalImage, required maskImage, owner, createdOn, updatedOn}): _originalImage = originalImage, _maskImage = maskImage, _owner = owner, _createdOn = createdOn, _updatedOn = updatedOn;
   
-  String get imageEntryMaskImageId {
-    try {
-      return _imageEntryMaskImageId!;
-    } catch(e) {
-      throw amplify_core.AmplifyCodeGenModelException(
-          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion:
-            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString()
-          );
-    }
-  }
-  
-  const ImageEntry._internal({required this.id, required originalImage, required maskImage, owner, createdAt, updatedAt, required imageEntryOriginalImageId, required imageEntryMaskImageId}): _originalImage = originalImage, _maskImage = maskImage, _owner = owner, _createdAt = createdAt, _updatedAt = updatedAt, _imageEntryOriginalImageId = imageEntryOriginalImageId, _imageEntryMaskImageId = imageEntryMaskImageId;
-  
-  factory ImageEntry({String? id, required Picture originalImage, required Picture maskImage, String? owner, required String imageEntryOriginalImageId, required String imageEntryMaskImageId}) {
+  factory ImageEntry({String? id, required String originalImage, required String maskImage, String? owner}) {
     return ImageEntry._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       originalImage: originalImage,
       maskImage: maskImage,
-      owner: owner,
-      imageEntryOriginalImageId: imageEntryOriginalImageId,
-      imageEntryMaskImageId: imageEntryMaskImageId);
+      owner: owner);
   }
   
   bool equals(Object other) {
@@ -135,9 +105,7 @@ class ImageEntry extends amplify_core.Model {
       id == other.id &&
       _originalImage == other._originalImage &&
       _maskImage == other._maskImage &&
-      _owner == other._owner &&
-      _imageEntryOriginalImageId == other._imageEntryOriginalImageId &&
-      _imageEntryMaskImageId == other._imageEntryMaskImageId;
+      _owner == other._owner;
   }
   
   @override
@@ -149,59 +117,47 @@ class ImageEntry extends amplify_core.Model {
     
     buffer.write("ImageEntry {");
     buffer.write("id=" + "$id" + ", ");
+    buffer.write("originalImage=" + "$_originalImage" + ", ");
+    buffer.write("maskImage=" + "$_maskImage" + ", ");
     buffer.write("owner=" + "$_owner" + ", ");
-    buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
-    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null") + ", ");
-    buffer.write("imageEntryOriginalImageId=" + "$_imageEntryOriginalImageId" + ", ");
-    buffer.write("imageEntryMaskImageId=" + "$_imageEntryMaskImageId");
+    buffer.write("createdOn=" + (_createdOn != null ? _createdOn!.format() : "null") + ", ");
+    buffer.write("updatedOn=" + (_updatedOn != null ? _updatedOn!.format() : "null"));
     buffer.write("}");
     
     return buffer.toString();
   }
   
-  ImageEntry copyWith({Picture? originalImage, Picture? maskImage, String? owner, String? imageEntryOriginalImageId, String? imageEntryMaskImageId}) {
+  ImageEntry copyWith({String? originalImage, String? maskImage, String? owner}) {
     return ImageEntry._internal(
       id: id,
       originalImage: originalImage ?? this.originalImage,
       maskImage: maskImage ?? this.maskImage,
-      owner: owner ?? this.owner,
-      imageEntryOriginalImageId: imageEntryOriginalImageId ?? this.imageEntryOriginalImageId,
-      imageEntryMaskImageId: imageEntryMaskImageId ?? this.imageEntryMaskImageId);
+      owner: owner ?? this.owner);
   }
   
   ImageEntry copyWithModelFieldValues({
-    ModelFieldValue<Picture>? originalImage,
-    ModelFieldValue<Picture>? maskImage,
-    ModelFieldValue<String?>? owner,
-    ModelFieldValue<String>? imageEntryOriginalImageId,
-    ModelFieldValue<String>? imageEntryMaskImageId
+    ModelFieldValue<String>? originalImage,
+    ModelFieldValue<String>? maskImage,
+    ModelFieldValue<String?>? owner
   }) {
     return ImageEntry._internal(
       id: id,
       originalImage: originalImage == null ? this.originalImage : originalImage.value,
       maskImage: maskImage == null ? this.maskImage : maskImage.value,
-      owner: owner == null ? this.owner : owner.value,
-      imageEntryOriginalImageId: imageEntryOriginalImageId == null ? this.imageEntryOriginalImageId : imageEntryOriginalImageId.value,
-      imageEntryMaskImageId: imageEntryMaskImageId == null ? this.imageEntryMaskImageId : imageEntryMaskImageId.value
+      owner: owner == null ? this.owner : owner.value
     );
   }
   
   ImageEntry.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
-      _originalImage = json['originalImage']?['serializedData'] != null
-        ? Picture.fromJson(new Map<String, dynamic>.from(json['originalImage']['serializedData']))
-        : null,
-      _maskImage = json['maskImage']?['serializedData'] != null
-        ? Picture.fromJson(new Map<String, dynamic>.from(json['maskImage']['serializedData']))
-        : null,
+      _originalImage = json['originalImage'],
+      _maskImage = json['maskImage'],
       _owner = json['owner'],
-      _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
-      _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null,
-      _imageEntryOriginalImageId = json['imageEntryOriginalImageId'],
-      _imageEntryMaskImageId = json['imageEntryMaskImageId'];
+      _createdOn = json['createdOn'] != null ? amplify_core.TemporalDateTime.fromString(json['createdOn']) : null,
+      _updatedOn = json['updatedOn'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedOn']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'originalImage': _originalImage?.toJson(), 'maskImage': _maskImage?.toJson(), 'owner': _owner, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format(), 'imageEntryOriginalImageId': _imageEntryOriginalImageId, 'imageEntryMaskImageId': _imageEntryMaskImageId
+    'id': id, 'originalImage': _originalImage, 'maskImage': _maskImage, 'owner': _owner, 'createdOn': _createdOn?.format(), 'updatedOn': _updatedOn?.format()
   };
   
   Map<String, Object?> toMap() => {
@@ -209,23 +165,15 @@ class ImageEntry extends amplify_core.Model {
     'originalImage': _originalImage,
     'maskImage': _maskImage,
     'owner': _owner,
-    'createdAt': _createdAt,
-    'updatedAt': _updatedAt,
-    'imageEntryOriginalImageId': _imageEntryOriginalImageId,
-    'imageEntryMaskImageId': _imageEntryMaskImageId
+    'createdOn': _createdOn,
+    'updatedOn': _updatedOn
   };
 
   static final amplify_core.QueryModelIdentifier<ImageEntryModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<ImageEntryModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
-  static final ORIGINALIMAGE = amplify_core.QueryField(
-    fieldName: "originalImage",
-    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Picture'));
-  static final MASKIMAGE = amplify_core.QueryField(
-    fieldName: "maskImage",
-    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Picture'));
+  static final ORIGINALIMAGE = amplify_core.QueryField(fieldName: "originalImage");
+  static final MASKIMAGE = amplify_core.QueryField(fieldName: "maskImage");
   static final OWNER = amplify_core.QueryField(fieldName: "owner");
-  static final IMAGEENTRYORIGINALIMAGEID = amplify_core.QueryField(fieldName: "imageEntryOriginalImageId");
-  static final IMAGEENTRYMASKIMAGEID = amplify_core.QueryField(fieldName: "imageEntryMaskImageId");
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "ImageEntry";
     modelSchemaDefinition.pluralName = "ImageEntries";
@@ -246,18 +194,16 @@ class ImageEntry extends amplify_core.Model {
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
     
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasOne(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: ImageEntry.ORIGINALIMAGE,
       isRequired: true,
-      ofModelName: 'Picture',
-      associatedKey: Picture.ID
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasOne(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: ImageEntry.MASKIMAGE,
       isRequired: true,
-      ofModelName: 'Picture',
-      associatedKey: Picture.ID
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
@@ -267,29 +213,17 @@ class ImageEntry extends amplify_core.Model {
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
-      fieldName: 'createdAt',
+      fieldName: 'createdOn',
       isRequired: false,
       isReadOnly: true,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.dateTime)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
-      fieldName: 'updatedAt',
+      fieldName: 'updatedOn',
       isRequired: false,
       isReadOnly: true,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.dateTime)
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: ImageEntry.IMAGEENTRYORIGINALIMAGEID,
-      isRequired: true,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: ImageEntry.IMAGEENTRYMASKIMAGEID,
-      isRequired: true,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
   });
 }

@@ -41,7 +41,8 @@ class _ImageThumbnailState extends State<ImageThumbnail> {
             Visibility(
                 visible: widget.isChecked != null,
                 child: Checkbox(
-                  value: widget.isChecked,
+                  tristate: true,
+                  value: _isChecked,
                   onChanged: (value) => _isChecked = value,
                 )),
             Image.file(

@@ -1,26 +1,21 @@
-﻿import 'dart:io';
-import 'dart:typed_data';
-
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:furnai/misc/enums.dart';
 import 'dart:ui' as ui;
 
-import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:furnai/presentation/image_editor.dart';
 import 'package:furnai/presentation/mask_result_preview.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:uuid/uuid.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:furnai/services/remote_image_service.dart';
 
-class ImageEditorWrapper extends StatefulWidget {
+class ImageEditorWrapper extends ConsumerStatefulWidget {
   const ImageEditorWrapper({super.key, required this.image});
   final ui.Image image;
 
   @override
-  State<ImageEditorWrapper> createState() => _ImageEditorWrapperState();
+  ConsumerState<ImageEditorWrapper> createState() => _ImageEditorWrapperState();
 }
 
-class _ImageEditorWrapperState extends State<ImageEditorWrapper> {
+class _ImageEditorWrapperState extends ConsumerState<ImageEditorWrapper> {
   GlobalKey<ImageEditorViewState> imageEditorKey = GlobalKey<ImageEditorViewState>();
   PointerMode _pointerMode = PointerMode.drag;
   final List<Widget> _pointerModeToggles = [
@@ -73,16 +68,25 @@ class _ImageEditorWrapperState extends State<ImageEditorWrapper> {
               children: [
                 IconButton.filledTonal(
                   iconSize: 30,
-                  onPressed: () => saveImageLocally(
-                    (data, path) => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => MaskResultPreview(
-                          result: data,
-                          path: path,
-                        ),
-                      ),
-                    ),
-                  ),
+                  onPressed: () async {
+                    var mask = await imageEditorKey.currentState!.mask;
+                    await ref
+                        .read(remoteImageServiceProvider.notifier)
+                        .uploadImages(
+                          original: widget.image,
+                          mask: mask,
+                        )
+                        .then(
+                          (value) => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => MaskResultPreview(
+                                original: widget.image,
+                                mask: mask,
+                              ),
+                            ),
+                          ),
+                        );
+                  },
                   icon: const Icon(Icons.save),
                 ),
                 const SizedBox(
@@ -111,49 +115,5 @@ class _ImageEditorWrapperState extends State<ImageEditorWrapper> {
         ],
       ),
     );
-  }
-
-  Future<void> saveImageLocally(void Function((ByteData, ByteData) saved, String path) onSaved) async {
-    var mask = await imageEditorKey.currentState!.mask;
-
-    var originalPngBytes = await widget.image.toByteData(format: ui.ImageByteFormat.png);
-    var maskPngBytes = await mask.toByteData(format: ui.ImageByteFormat.png);
-
-    final buffer = originalPngBytes!.buffer;
-    final maskBuffer = maskPngBytes!.buffer;
-
-    const uuid = Uuid();
-
-    var dir = await getApplicationDocumentsDirectory();
-    var folderPath = '${dir.path}\\generated';
-    var originalPath = '$folderPath\\${uuid.v1()}.png';
-    var maskPath = '$folderPath\\${uuid.v1()}_mask.png';
-
-    File(originalPath).create(recursive: true).then((file) =>
-        file.writeAsBytes(buffer.asUint8List(originalPngBytes.offsetInBytes, originalPngBytes.lengthInBytes)));
-    File(maskPath).create(recursive: true).then(
-        (file) => file.writeAsBytes(maskBuffer.asUint8List(maskPngBytes.offsetInBytes, maskPngBytes.lengthInBytes)));
-    onSaved((originalPngBytes, maskPngBytes), folderPath);
-  }
-
-  Future<void> uploadImageBytesToBucket({
-    required List<int> bytes,
-    required String key,
-    required String contentType,
-  }) async {
-    try {
-      final result = await Amplify.Storage.uploadData(
-        data: S3DataPayload.bytes(
-          bytes,
-          contentType: contentType, //"image/png"
-        ),
-        key: key,
-      ).result;
-
-      safePrint('Uploaded data: ${result.uploadedItem.key}');
-    } on StorageException catch (e) {
-      safePrint('Error uploading data: ${e.message}');
-      rethrow;
-    }
   }
 }

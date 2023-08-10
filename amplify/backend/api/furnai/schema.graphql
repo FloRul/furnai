@@ -1,17 +1,6 @@
-type ImageEntry @model @auth(rules: [{allow: owner}]) {
+type ImageEntry @model(timestamps: { createdAt: "createdOn", updatedAt: "updatedOn" }) @auth(rules: [{allow: owner}]) {
     id: ID!
-    originalImage: Picture! @hasOne
-    maskImage: Picture! @hasOne
-    owner: String @auth(rules: [{ allow: owner, operations: [read, delete] }])
-}
-
-type S3Object @model @auth(rules: [{ allow: owner }]) {
-  bucket: String!
-  region: String!
-  key: String!
-}
-
-type Picture @model @auth(rules: [{ allow: owner }]) {
-  id: ID!
-  file: S3Object! @hasOne
+    originalImage: String!
+    maskImage: String!
+    owner: String @auth(rules: [{ allow: owner, operations: [read] }])
 }
