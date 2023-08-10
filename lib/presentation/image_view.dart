@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:furnai/misc/enums.dart';
 import 'dart:ui' as ui;
 
+import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:furnai/presentation/image_editor.dart';
 import 'package:furnai/presentation/mask_result_preview.dart';
 import 'package:path_provider/path_provider.dart';
@@ -71,7 +73,7 @@ class _ImageEditorWrapperState extends State<ImageEditorWrapper> {
               children: [
                 IconButton.filledTonal(
                   iconSize: 30,
-                  onPressed: () => saveImage(
+                  onPressed: () => saveImageLocally(
                     (data, path) => Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (_) => MaskResultPreview(
@@ -111,7 +113,7 @@ class _ImageEditorWrapperState extends State<ImageEditorWrapper> {
     );
   }
 
-  Future<void> saveImage(void Function((ByteData, ByteData) saved, String path) onSaved) async {
+  Future<void> saveImageLocally(void Function((ByteData, ByteData) saved, String path) onSaved) async {
     var mask = await imageEditorKey.currentState!.mask;
 
     var originalPngBytes = await widget.image.toByteData(format: ui.ImageByteFormat.png);
@@ -132,5 +134,26 @@ class _ImageEditorWrapperState extends State<ImageEditorWrapper> {
     File(maskPath).create(recursive: true).then(
         (file) => file.writeAsBytes(maskBuffer.asUint8List(maskPngBytes.offsetInBytes, maskPngBytes.lengthInBytes)));
     onSaved((originalPngBytes, maskPngBytes), folderPath);
+  }
+
+  Future<void> uploadImageBytesToBucket({
+    required List<int> bytes,
+    required String key,
+    required String contentType,
+  }) async {
+    try {
+      final result = await Amplify.Storage.uploadData(
+        data: S3DataPayload.bytes(
+          bytes,
+          contentType: contentType, //"image/png"
+        ),
+        key: key,
+      ).result;
+
+      safePrint('Uploaded data: ${result.uploadedItem.key}');
+    } on StorageException catch (e) {
+      safePrint('Error uploading data: ${e.message}');
+      rethrow;
+    }
   }
 }
