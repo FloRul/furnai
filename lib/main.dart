@@ -1,4 +1,5 @@
 import 'package:amplify_authenticator/amplify_authenticator.dart';
+import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:flutter/material.dart';
 import 'package:furnai/amplifyconfiguration.dart';
 import 'package:furnai/models/ModelProvider.dart';
@@ -20,7 +21,8 @@ Future<void> _configureAmplify() async {
   try {
     final api = AmplifyAPI(modelProvider: ModelProvider.instance);
     final auth = AmplifyAuthCognito();
-    await Amplify.addPlugins([api, auth]);
+    final storage = AmplifyStorageS3();
+    await Amplify.addPlugins([api, auth, storage]);
     await Amplify.configure(amplifyconfig);
     print('Successfully configured');
   } on Exception catch (e) {

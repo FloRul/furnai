@@ -1,0 +1,14 @@
+{
+  "resourceName": "S3FurnAI",
+  "policyUUID": "754bdc30",
+  "bucketName": "furnai96e6d571565f41af84ee3e9878fba030",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "triggerFunction": "S3Trigger5d88f219",
+  "groupAccess": {}
+}

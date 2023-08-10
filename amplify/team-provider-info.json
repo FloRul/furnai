@@ -17,6 +17,15 @@
       },
       "api": {
         "furnai": {}
+      },
+      "function": {
+        "S3Trigger5d88f219": {
+          "deploymentBucketName": "amplify-furnai-dev-215019-deployment",
+          "s3Key": "amplify-builds/S3Trigger5d88f219-755636686d6164656243-build.zip"
+        }
+      },
+      "storage": {
+        "S3FurnAI": {}
       }
     }
   }
