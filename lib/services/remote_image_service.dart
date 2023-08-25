@@ -60,7 +60,7 @@ class RemoteImageService extends _$RemoteImageService {
           options: const StorageUploadDataOptions(accessLevel: StorageAccessLevel.private),
           data: S3DataPayload.bytes(maskBuffer.asUint8List(maskPngBytes.offsetInBytes, maskPngBytes.lengthInBytes),
               contentType: contentType),
-          key: originalId);
+          key: maskId);
 
       final entry = ImageEntry(id: uuid.v1(), originalImage: originalId, maskImage: maskId);
       await Amplify.API.mutate(request: ModelMutations.create(entry)).response;
