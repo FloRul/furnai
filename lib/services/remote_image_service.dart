@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
+import 'package:furnai/helpers/pick_file.dart';
 import 'package:furnai/misc/constants.dart';
 
 import 'package:furnai/models/ImageEntry.dart';
@@ -35,7 +36,6 @@ class RemoteImageService extends _$RemoteImageService {
   @override
   FutureOr<List<ImageEntry>> build() async => fetchImageEntry();
 
-// TODO: refactor to split and test
   Future<void> uploadImages({
     required ui.Image original,
     required ui.Image mask,
@@ -45,26 +45,30 @@ class RemoteImageService extends _$RemoteImageService {
       const uuid = Uuid();
       final entryId = uuid.v1();
 
-      final originalId = '$entryId/${KeyPrefix.original}';
-      final maskId = '$entryId/${KeyPrefix.mask}';
-      final thumnailId = '$entryId/${KeyPrefix.thumbnail}';
+      final originalId = '${KeyPrefix.original}/$entryId';
+      final maskId = '${KeyPrefix.mask}/$entryId';
+      final thumnailId = '${KeyPrefix.thumbnail}/$entryId';
 
-      var originalPngBytes = await original.toByteData(format: ui.ImageByteFormat.png);
-      var maskPngBytes = await mask.toByteData(format: ui.ImageByteFormat.png);
-
-      final buffer = originalPngBytes!.buffer;
-      final maskBuffer = maskPngBytes!.buffer;
+      var originalPngBytes = await original.toUint8List();
+      var maskPngBytes = await mask.toUint8List();
 
       Amplify.Storage.uploadData(
           options: const StorageUploadDataOptions(accessLevel: StorageAccessLevel.private),
-          data: S3DataPayload.bytes(buffer.asUint8List(originalPngBytes.offsetInBytes, originalPngBytes.lengthInBytes),
-              contentType: contentType),
+          data: S3DataPayload.bytes(originalPngBytes, contentType: contentType),
           key: originalId);
+
       Amplify.Storage.uploadData(
           options: const StorageUploadDataOptions(accessLevel: StorageAccessLevel.private),
-          data: S3DataPayload.bytes(maskBuffer.asUint8List(maskPngBytes.offsetInBytes, maskPngBytes.lengthInBytes),
-              contentType: contentType),
+          data: S3DataPayload.bytes(maskPngBytes, contentType: contentType),
           key: maskId);
+
+      final thumbnail = await Helpers.generateThumnail(original);
+      var thumbnailPngBytes = await thumbnail.toUint8List();
+
+      Amplify.Storage.uploadData(
+          options: const StorageUploadDataOptions(accessLevel: StorageAccessLevel.private),
+          data: S3DataPayload.bytes(thumbnailPngBytes, contentType: contentType),
+          key: thumnailId);
 
       final entry =
           ImageEntry(id: uuid.v1(), originalImagePath: originalId, maskImagePath: maskId, thumnailPath: thumnailId);
@@ -75,21 +79,22 @@ class RemoteImageService extends _$RemoteImageService {
     }
   }
 
-  // Future<List<ImageEntry>> listImages([int limit = 50]) async {
-  //   try {
-  //     final result = await Amplify.Storage.list(
-  //       options: StorageListOptions(
-  //         accessLevel: StorageAccessLevel.private,
-  //         pageSize: limit,
-  //         pluginOptions: const S3ListPluginOptions.listAll(),
-  //       ),
-  //     ).result;
-  //     return result.items;
-  //   } on StorageException catch (e) {
-  //     safePrint('Error listing files: ${e.message}');
-  //     rethrow;
-  //   }
-  // }
+  Future<List<ImageEntry?>> getEntryThumnails([int limit = 50]) async {
+    try {
+      final request = ModelQueries.list(ImageEntry.classType);
+      final response = await Amplify.API.query(request: request).response;
+
+      final entries = response.data?.items;
+      if (entries == null) {
+        safePrint('errors: ${response.errors}');
+        return const [];
+      }
+      return entries;
+    } on ApiException catch (e) {
+      safePrint('Query failed: $e');
+      return const [];
+    }
+  }
 
   Future<void> saveImageLocally(
       ui.Image original, ui.Image mask, void Function((ByteData, ByteData) saved, String path) onSaved) async {
