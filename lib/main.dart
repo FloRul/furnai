@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:furnai/amplifyconfiguration.dart';
 import 'package:furnai/models/ModelProvider.dart';
-import 'package:furnai/presentation/image_gallery.dart';
+import 'package:furnai/presentation/home.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 
 import 'package:amplify_api/amplify_api.dart';
@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
     routes: [
       GoRoute(
         path: '/',
-        builder: (context, state) => const ImageGallery(),
+        builder: (context, state) => const Home(),
       ),
     ],
   );

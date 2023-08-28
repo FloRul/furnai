@@ -27,9 +27,6 @@ import 'package:amplify_core/amplify_core.dart' as amplify_core;
 class ImageEntry extends amplify_core.Model {
   static const classType = const _ImageEntryModelType();
   final String id;
-  final String? _originalImagePath;
-  final String? _maskImagePath;
-  final String? _thumnailPath;
   final String? _owner;
   final amplify_core.TemporalDateTime? _createdOn;
   final amplify_core.TemporalDateTime? _updatedOn;
@@ -47,45 +44,6 @@ class ImageEntry extends amplify_core.Model {
       );
   }
   
-  String get originalImagePath {
-    try {
-      return _originalImagePath!;
-    } catch(e) {
-      throw amplify_core.AmplifyCodeGenModelException(
-          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion:
-            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString()
-          );
-    }
-  }
-  
-  String get maskImagePath {
-    try {
-      return _maskImagePath!;
-    } catch(e) {
-      throw amplify_core.AmplifyCodeGenModelException(
-          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion:
-            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString()
-          );
-    }
-  }
-  
-  String get thumnailPath {
-    try {
-      return _thumnailPath!;
-    } catch(e) {
-      throw amplify_core.AmplifyCodeGenModelException(
-          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion:
-            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString()
-          );
-    }
-  }
-  
   String? get owner {
     return _owner;
   }
@@ -98,14 +56,11 @@ class ImageEntry extends amplify_core.Model {
     return _updatedOn;
   }
   
-  const ImageEntry._internal({required this.id, required originalImagePath, required maskImagePath, required thumnailPath, owner, createdOn, updatedOn}): _originalImagePath = originalImagePath, _maskImagePath = maskImagePath, _thumnailPath = thumnailPath, _owner = owner, _createdOn = createdOn, _updatedOn = updatedOn;
+  const ImageEntry._internal({required this.id, owner, createdOn, updatedOn}): _owner = owner, _createdOn = createdOn, _updatedOn = updatedOn;
   
-  factory ImageEntry({String? id, required String originalImagePath, required String maskImagePath, required String thumnailPath, String? owner}) {
+  factory ImageEntry({String? id, String? owner}) {
     return ImageEntry._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
-      originalImagePath: originalImagePath,
-      maskImagePath: maskImagePath,
-      thumnailPath: thumnailPath,
       owner: owner);
   }
   
@@ -118,9 +73,6 @@ class ImageEntry extends amplify_core.Model {
     if (identical(other, this)) return true;
     return other is ImageEntry &&
       id == other.id &&
-      _originalImagePath == other._originalImagePath &&
-      _maskImagePath == other._maskImagePath &&
-      _thumnailPath == other._thumnailPath &&
       _owner == other._owner;
   }
   
@@ -133,9 +85,6 @@ class ImageEntry extends amplify_core.Model {
     
     buffer.write("ImageEntry {");
     buffer.write("id=" + "$id" + ", ");
-    buffer.write("originalImagePath=" + "$_originalImagePath" + ", ");
-    buffer.write("maskImagePath=" + "$_maskImagePath" + ", ");
-    buffer.write("thumnailPath=" + "$_thumnailPath" + ", ");
     buffer.write("owner=" + "$_owner" + ", ");
     buffer.write("createdOn=" + (_createdOn != null ? _createdOn!.format() : "null") + ", ");
     buffer.write("updatedOn=" + (_updatedOn != null ? _updatedOn!.format() : "null"));
@@ -144,48 +93,33 @@ class ImageEntry extends amplify_core.Model {
     return buffer.toString();
   }
   
-  ImageEntry copyWith({String? originalImagePath, String? maskImagePath, String? thumnailPath, String? owner}) {
+  ImageEntry copyWith({String? owner}) {
     return ImageEntry._internal(
       id: id,
-      originalImagePath: originalImagePath ?? this.originalImagePath,
-      maskImagePath: maskImagePath ?? this.maskImagePath,
-      thumnailPath: thumnailPath ?? this.thumnailPath,
       owner: owner ?? this.owner);
   }
   
   ImageEntry copyWithModelFieldValues({
-    ModelFieldValue<String>? originalImagePath,
-    ModelFieldValue<String>? maskImagePath,
-    ModelFieldValue<String>? thumnailPath,
     ModelFieldValue<String?>? owner
   }) {
     return ImageEntry._internal(
       id: id,
-      originalImagePath: originalImagePath == null ? this.originalImagePath : originalImagePath.value,
-      maskImagePath: maskImagePath == null ? this.maskImagePath : maskImagePath.value,
-      thumnailPath: thumnailPath == null ? this.thumnailPath : thumnailPath.value,
       owner: owner == null ? this.owner : owner.value
     );
   }
   
   ImageEntry.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
-      _originalImagePath = json['originalImagePath'],
-      _maskImagePath = json['maskImagePath'],
-      _thumnailPath = json['thumnailPath'],
       _owner = json['owner'],
       _createdOn = json['createdOn'] != null ? amplify_core.TemporalDateTime.fromString(json['createdOn']) : null,
       _updatedOn = json['updatedOn'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedOn']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'originalImagePath': _originalImagePath, 'maskImagePath': _maskImagePath, 'thumnailPath': _thumnailPath, 'owner': _owner, 'createdOn': _createdOn?.format(), 'updatedOn': _updatedOn?.format()
+    'id': id, 'owner': _owner, 'createdOn': _createdOn?.format(), 'updatedOn': _updatedOn?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
-    'originalImagePath': _originalImagePath,
-    'maskImagePath': _maskImagePath,
-    'thumnailPath': _thumnailPath,
     'owner': _owner,
     'createdOn': _createdOn,
     'updatedOn': _updatedOn
@@ -193,9 +127,6 @@ class ImageEntry extends amplify_core.Model {
 
   static final amplify_core.QueryModelIdentifier<ImageEntryModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<ImageEntryModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
-  static final ORIGINALIMAGEPATH = amplify_core.QueryField(fieldName: "originalImagePath");
-  static final MASKIMAGEPATH = amplify_core.QueryField(fieldName: "maskImagePath");
-  static final THUMNAILPATH = amplify_core.QueryField(fieldName: "thumnailPath");
   static final OWNER = amplify_core.QueryField(fieldName: "owner");
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "ImageEntry";
@@ -216,24 +147,6 @@ class ImageEntry extends amplify_core.Model {
     ];
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: ImageEntry.ORIGINALIMAGEPATH,
-      isRequired: true,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: ImageEntry.MASKIMAGEPATH,
-      isRequired: true,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: ImageEntry.THUMNAILPATH,
-      isRequired: true,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
-    ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: ImageEntry.OWNER,

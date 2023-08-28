@@ -1,7 +1,5 @@
-type ImageEntry @model(timestamps: { createdAt: "createdOn", updatedAt: "updatedOn" }) @auth(rules: [{allow: owner}]) {
+type ImageEntry 
+@model(timestamps: { createdAt: "createdOn", updatedAt: "updatedOn" }) 
+@auth(rules: [{allow: owner}]) {
     id: ID!
-    originalImagePath: String!
-    maskImagePath: String!
-    thumnailPath: String!
-    owner: String @auth(rules: [{ allow: owner, operations: [read] }])
 }
