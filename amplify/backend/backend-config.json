@@ -7,17 +7,24 @@
             "UserPoolId"
           ],
           "category": "auth",
-          "resourceName": "furnai31095bad"
+          "resourceName": "furnai5935014b"
         }
       ],
       "output": {
         "authConfig": {
-          "additionalAuthenticationProviders": [],
-          "defaultAuthentication": {
-            "authenticationType": "AMAZON_COGNITO_USER_POOLS",
-            "userPoolConfig": {
-              "userPoolId": "authfurnai31095bad"
+          "additionalAuthenticationProviders": [
+            {
+              "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+              "userPoolConfig": {
+                "userPoolId": "authfurnai5935014b"
+              }
             }
+          ],
+          "defaultAuthentication": {
+            "apiKeyConfig": {
+              "apiKeyExpirationDays": 7
+            },
+            "authenticationType": "API_KEY"
           }
         }
       },
@@ -26,7 +33,7 @@
     }
   },
   "auth": {
-    "furnai31095bad": {
+    "furnai5935014b": {
       "customAuth": false,
       "dependsOn": [],
       "frontendAuthConfig": {
@@ -42,7 +49,9 @@
           "EMAIL"
         ],
         "socialProviders": [],
-        "usernameAttributes": [],
+        "usernameAttributes": [
+          "EMAIL"
+        ],
         "verificationMechanisms": [
           "EMAIL"
         ]
@@ -51,44 +60,9 @@
       "service": "Cognito"
     }
   },
-  "function": {
-    "S3Trigger5d88f219": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda"
-    }
-  },
-  "parameters": {
-    "AMPLIFY_function_S3Trigger5d88f219_deploymentBucketName": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "S3Trigger5d88f219"
-        }
-      ]
-    },
-    "AMPLIFY_function_S3Trigger5d88f219_s3Key": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "S3Trigger5d88f219"
-        }
-      ]
-    }
-  },
   "storage": {
-    "S3FurnAI": {
-      "dependsOn": [
-        {
-          "attributes": [
-            "Name",
-            "Arn",
-            "LambdaExecutionRole"
-          ],
-          "category": "function",
-          "resourceName": "S3Trigger5d88f219"
-        }
-      ],
+    "s3eda1f976": {
+      "dependsOn": [],
       "providerPlugin": "awscloudformation",
       "service": "S3"
     }

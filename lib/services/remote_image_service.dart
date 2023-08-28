@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
+import 'package:furnai/misc/constants.dart';
 
 import 'package:furnai/models/ImageEntry.dart';
 import 'package:path_provider/path_provider.dart';
@@ -42,8 +43,11 @@ class RemoteImageService extends _$RemoteImageService {
   }) async {
     try {
       const uuid = Uuid();
-      final originalId = uuid.v1();
-      final maskId = uuid.v1();
+      final entryId = uuid.v1();
+
+      final originalId = '$entryId/${KeyPrefix.original}';
+      final maskId = '$entryId/${KeyPrefix.mask}';
+      final thumnailId = '$entryId/${KeyPrefix.thumbnail}';
 
       var originalPngBytes = await original.toByteData(format: ui.ImageByteFormat.png);
       var maskPngBytes = await mask.toByteData(format: ui.ImageByteFormat.png);
@@ -62,7 +66,8 @@ class RemoteImageService extends _$RemoteImageService {
               contentType: contentType),
           key: maskId);
 
-      final entry = ImageEntry(id: uuid.v1(), originalImage: originalId, maskImage: maskId);
+      final entry =
+          ImageEntry(id: uuid.v1(), originalImagePath: originalId, maskImagePath: maskId, thumnailPath: thumnailId);
       await Amplify.API.mutate(request: ModelMutations.create(entry)).response;
     } on StorageException catch (e) {
       safePrint('Error uploading data: ${e.message}');

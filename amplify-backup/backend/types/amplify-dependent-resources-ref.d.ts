@@ -2,12 +2,11 @@ export type AmplifyDependentResourcesAttributes = {
   "api": {
     "furnai": {
       "GraphQLAPIEndpointOutput": "string",
-      "GraphQLAPIIdOutput": "string",
-      "GraphQLAPIKeyOutput": "string"
+      "GraphQLAPIIdOutput": "string"
     }
   },
   "auth": {
-    "furnai5935014b": {
+    "furnai31095bad": {
       "AppClientID": "string",
       "AppClientIDWeb": "string",
       "IdentityPoolId": "string",
@@ -17,8 +16,17 @@ export type AmplifyDependentResourcesAttributes = {
       "UserPoolName": "string"
     }
   },
+  "function": {
+    "S3Trigger5d88f219": {
+      "Arn": "string",
+      "LambdaExecutionRole": "string",
+      "LambdaExecutionRoleArn": "string",
+      "Name": "string",
+      "Region": "string"
+    }
+  },
   "storage": {
-    "s3eda1f976": {
+    "S3FurnAI": {
       "BucketName": "string",
       "Region": "string"
     }

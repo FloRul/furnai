@@ -1,0 +1,91 @@
+{
+  "providers": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-furnai-dev-215019-authRole",
+      "UnauthRoleArn": "arn:aws:iam::668618083225:role/amplify-furnai-dev-215019-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::668618083225:role/amplify-furnai-dev-215019-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-furnai-dev-215019-deployment",
+      "UnauthRoleName": "amplify-furnai-dev-215019-unauthRole",
+      "StackName": "amplify-furnai-dev-215019",
+      "StackId": "arn:aws:cloudformation:us-east-1:668618083225:stack/amplify-furnai-dev-215019/18d3c350-3657-11ee-be51-0eda8fea9503",
+      "AmplifyAppId": "d20a62988crvri"
+    }
+  },
+  "api": {
+    "furnai": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "furnai31095bad"
+        }
+      ],
+      "output": {
+        "authConfig": {
+          "additionalAuthenticationProviders": [],
+          "defaultAuthentication": {
+            "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+            "userPoolConfig": {
+              "userPoolId": "authfurnai31095bad"
+            }
+          }
+        }
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "AppSync"
+    }
+  },
+  "auth": {
+    "furnai31095bad": {
+      "customAuth": false,
+      "dependsOn": [],
+      "frontendAuthConfig": {
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyCharacters": [],
+          "passwordPolicyMinLength": 8
+        },
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "socialProviders": [],
+        "usernameAttributes": [],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito"
+    }
+  },
+  "function": {
+    "S3Trigger5d88f219": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
+  "storage": {
+    "S3FurnAI": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "LambdaExecutionRole"
+          ],
+          "category": "function",
+          "resourceName": "S3Trigger5d88f219"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "S3"
+    }
+  }
+}

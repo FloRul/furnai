@@ -1,9 +1,9 @@
 ﻿import 'dart:io';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:furnai/helpers/pick_file.dart';
 import 'package:furnai/presentation/image_view.dart';
 import 'package:furnai/presentation/widgets/image_thumbnail.dart';
 import 'dart:ui' as ui;
@@ -116,10 +116,7 @@ class _ImageGalleryState extends ConsumerState<ImageGallery> {
       floatingActionButton: FloatingActionButton(
         heroTag: 'pickFile',
         onPressed: () async {
-          FilePickerResult? result = await FilePicker.platform.pickFiles(
-            type: FileType.custom,
-            allowedExtensions: ['jpg', 'png'],
-          );
+          var result = await Helpers.pickImages();
           final path = result?.paths.firstOrNull;
           if (path != null) {
             setState(() {

@@ -26,7 +26,7 @@ export 'ImageEntry.dart';
 
 class ModelProvider implements amplify_core.ModelProviderInterface {
   @override
-  String version = "a5223e549d9f418d06cadf88128f0477";
+  String version = "3ff5d281ff1d11cae02cceb2264fe4b6";
   @override
   List<amplify_core.ModelSchema> modelSchemas = [ImageEntry.schema];
   @override

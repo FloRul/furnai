@@ -3,7 +3,7 @@
     organization = "FloRulLab"
 
     workspaces {
-      name = "furnai-workspace"
+      name = "furnai-client"
     }
   }
   required_providers {
@@ -18,3 +18,11 @@ provider "aws" {
   region = "us-east-1"
 }
 
+resource "aws_amplify_app" "furnai_client" {
+  name = "furnai"
+}
+
+import {
+  to = aws_amplify_app.furnai_client
+  id = "d3tpxlgs0rlcx6"
+}

@@ -1,31 +1,25 @@
 {
   "dev": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-furnai-dev-215019-authRole",
-      "UnauthRoleArn": "arn:aws:iam::668618083225:role/amplify-furnai-dev-215019-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::668618083225:role/amplify-furnai-dev-215019-authRole",
+      "AuthRoleName": "amplify-furnai-dev-114711-authRole",
+      "UnauthRoleArn": "arn:aws:iam::668618083225:role/amplify-furnai-dev-114711-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::668618083225:role/amplify-furnai-dev-114711-authRole",
       "Region": "us-east-1",
-      "DeploymentBucketName": "amplify-furnai-dev-215019-deployment",
-      "UnauthRoleName": "amplify-furnai-dev-215019-unauthRole",
-      "StackName": "amplify-furnai-dev-215019",
-      "StackId": "arn:aws:cloudformation:us-east-1:668618083225:stack/amplify-furnai-dev-215019/18d3c350-3657-11ee-be51-0eda8fea9503",
-      "AmplifyAppId": "d20a62988crvri"
+      "DeploymentBucketName": "amplify-furnai-dev-114711-deployment",
+      "UnauthRoleName": "amplify-furnai-dev-114711-unauthRole",
+      "StackName": "amplify-furnai-dev-114711",
+      "StackId": "arn:aws:cloudformation:us-east-1:668618083225:stack/amplify-furnai-dev-114711/d2dcc0c0-4427-11ee-b315-12955600f1f3",
+      "AmplifyAppId": "d3tpxlgs0rlcx6"
     },
     "categories": {
       "auth": {
-        "furnai31095bad": {}
+        "furnai5935014b": {}
       },
       "api": {
         "furnai": {}
       },
-      "function": {
-        "S3Trigger5d88f219": {
-          "deploymentBucketName": "amplify-furnai-dev-215019-deployment",
-          "s3Key": "amplify-builds/S3Trigger5d88f219-755636686d6164656243-build.zip"
-        }
-      },
       "storage": {
-        "S3FurnAI": {}
+        "s3eda1f976": {}
       }
     }
   }
